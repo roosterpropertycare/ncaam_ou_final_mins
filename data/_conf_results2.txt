@@ -1,0 +1,88 @@
+﻿=== Schedule columns related to teams ===
+  away_id: 716 unique
+  home_id: 365 unique
+  team_box: 2 unique
+
+=== Sample: home/away conference mapping ===
+     game_id  home_id    home_display_name  home_conference_id  away_id        away_display_name  away_conference_id groups_name groups_short_name  conference_competition
+0  401638645       41        UConn Huskies                 4.0     2509      Purdue Boilermakers                 7.0        None              None                   False
+1  401638644       41        UConn Huskies                 4.0      333     Alabama Crimson Tide                23.0        None              None                   False
+2  401638643     2509  Purdue Boilermakers                 7.0      152        NC State Wolfpack                 2.0        None              None                   False
+3  401641124     2550   Seton Hall Pirates                 4.0      282  Indiana State Sycamores                18.0        None              None                   False
+4  401641122     2550   Seton Hall Pirates                 4.0       61         Georgia Bulldogs                23.0        None              None                   False
+
+=== Team-to-conference mapping: 362 teams ===
+
+Conference mapping columns: ['conference_competition', 'home_conference_id', 'away_conference_id', 'groups_id', 'groups_name', 'groups_short_name', 'groups_is_conference']
+Conference name columns: []
+
+=== groups_id -> name mapping (33 entries) ===
+    1 -> Am. East        (America East Conference)
+    2 -> ACC             (Atlantic Coast Conference)
+    3 -> A-10            (Atlantic 10 Conference)
+    4 -> Big East        (Big East Conference)
+    5 -> Big Sky         (Big Sky Conference)
+    6 -> Big South       (Big South Conference)
+    7 -> Big Ten         (Big Ten Conference)
+    8 -> Big 12          (Big 12 Conference)
+    9 -> Big West        (Big West Conference)
+   10 -> CAA             (Coastal Athletic Association)
+   11 -> CUSA            (Conference USA)
+   12 -> Ivy             (Ivy League)
+   13 -> MAAC            (Metro Atlantic Athletic Conference)
+   14 -> MAC             (Mid-American Conference)
+   16 -> MEAC            (Mid-Eastern Athletic Conference)
+   18 -> MVC             (Missouri Valley Conference)
+   19 -> NEC             (Northeast Conference)
+   20 -> OVC             (Ohio Valley Conference)
+   21 -> Pac-12          (Pac-12 Conference)
+   22 -> Patriot         (Patriot League)
+   23 -> SEC             (Southeastern Conference)
+   24 -> Southern        (Southern Conference)
+   25 -> Southland       (Southland Conference)
+   26 -> SWAC            (Southwestern Athletic Conference)
+   27 -> Sun Belt        (Sun Belt Conference)
+   29 -> WCC             (West Coast Conference)
+   30 -> WAC             (Western Athletic Conference)
+   44 -> Mountain West   (Mountain West Conference)
+   45 -> Horizon         (Horizon League)
+   46 -> ASUN            (ASUN Conference)
+   49 -> Summit          (Summit League)
+   62 -> American        (American Athletic Conference)
+python : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python 
+data/_conf_check.py 
+2>&1 | Out-File 
+-Encoding utf8 
+data/_conf_ ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~
+    + CategoryInfo   
+           : 
+NotSpecified: (T    
+raceback (most 
+recent     call 
+last)::String)     
+[], RemoteException
+    + 
+FullyQualifiedError  
+  Id : 
+NativeCommandErr    
+or
+ 
+  File "C:\Users\patg
+d\Downloads\Github\nc
+aam_ou_final_mins\dat
+a\_conf_check.py", 
+line 50, in <module>
+    print(f"  {int(r[
+'groups_id']):>3} -> 
+{r['groups_short_name
+']:<15} ({r['groups_n
+ame']})")
+ValueError: cannot 
+convert float NaN to 
+integer

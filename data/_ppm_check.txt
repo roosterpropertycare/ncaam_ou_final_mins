@@ -1,0 +1,45 @@
+
+=== Final 10 min (snapshot at 600s) ===
+Games with entry data: 6151
+Bucket                Games      Pts      PPM
+----------------------------------------------
+Leading >15            1455   58,954    4.052
+Leading 10-15           823   33,754    4.101
+Leading 5-9             857   34,894    4.072
+Leading 1-4             735   29,740    4.046
+Tied                    175    7,051    4.029
+Trailing 1-4            693   28,235    4.074
+Trailing 5-9            644   25,982    4.034
+Trailing 10-15          427   17,589    4.119
+Trailing >15            342   13,808    4.037
+TOTAL                  6151  250,007    4.064
+
+=== Final 5 min (snapshot at 300s) ===
+Games with entry data: 6151
+Bucket                Games      Pts      PPM
+----------------------------------------------
+Leading >15            1588   32,722    4.121
+Leading 10-15           803   18,203    4.534
+Leading 5-9             831   19,494    4.692
+Leading 1-4             725   15,848    4.372
+Tied                    206    4,557    4.424
+Trailing 1-4            591   13,158    4.453
+Trailing 5-9            597   13,700    4.590
+Trailing 10-15          431   10,169    4.719
+Trailing >15            379    7,723    4.075
+TOTAL                  6151  135,574    4.408
+
+=== Final 3 min (snapshot at 180s) ===
+Games with entry data: 6151
+Bucket                Games      Pts      PPM
+----------------------------------------------
+Leading >15            1651   20,602    4.159
+Leading 10-15           816   12,469    5.094
+Leading 5-9             737   12,114    5.479
+Leading 1-4             609    9,193    5.032
+Tied                    498    6,679    4.471
+Trailing 1-4            495    7,476    5.034
+Trailing 5-9            539    8,928    5.521
+Trailing 10-15          418    6,656    5.308
+Trailing >15            388    4,869    4.183
+TOTAL                  6151   88,986    4.822

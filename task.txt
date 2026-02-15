@@ -1,0 +1,230 @@
+
+Endgame Scoring in NCAA Men’s Basketball Under Game State and Team Profiles
+Executive Summary
+Late-game scoring in NCAA men’s basketball is not governed by a single “clutch” effect; it is the product of (a) game-state incentives (protect a lead vs. catch up), (b) rule-driven clock/possession mechanics (shot clock, foul/bonus dynamics, and free throws), and (c) the interaction between team quality profiles (especially defense) and context (home/away, season environment). A rigorous approach therefore needs to estimate scoring conditional on score margin and time remaining, rather than treating endgame possessions as exchangeable with earlier possessions. 
+
+Two empirically documented forces dominate the final minutes and can push scoring rates in opposite directions depending on margin. First, when games are close, the “foul game” and late-clock behaviors amplify the importance of each point and often concentrate scoring in the final minute(s). 
+ Second, when games are not close, substitutions and reduced urgency produce “garbage time” where points are less informative for team-strength modeling, even though they still count on the scoreboard. 
+ A recent large-scale study of the “foul up 3” endgame decision (last ~21 seconds) illustrates how late-game fouling is sufficiently systematic that it measurably changes outcomes: across studied clock/shot-clock cells, the recommended strategy improved overtime-adjusted win probability by ~1.63 percentage points on average—a magnitude that is meaningful for in-game modeling. 
+
+Season context matters because rule and emphasis changes alter baseline pace and scoring efficiency, which must be controlled for in any 2015–2024 panel. For example, when the men’s shot clock was reduced from 35 to 30 seconds, NCAA reporting highlighted an associated rise in possessions per game and scoring/efficiency early in the subsequent season (illustrative comparison shown in the charts embedded in this report). 
+
+This report provides a rigorous, reproducible framework to: (1) parse play-by-play into second-level (or minute-level) exposures, (2) compute points-per-minute in the final 10/5/3 minutes in margin buckets, (3) adjust for foul-driven “non-linear” endgame behavior, and (4) estimate context effects with mixed-effects or hierarchical Bayesian models including interactions (margin × home/away, margin × opponent defense). It also details robustness checks and diagnostics intended for betting/modeling use. Sources prioritized are official/primary play-by-play feeds where possible and widely used public pipelines that pull directly from those feeds. 
+
+Important constraint (transparency): In this environment, I can document and specify the full computation and modeling pipeline and cite primary methodologies and data schemas, but I cannot execute a full 2015–2024 scrape and compute the requested endgame scoring-rate tables end-to-end. The report therefore focuses on the analytic design, model specification, and validated building blocks (data dictionaries, possession/efficiency calculations, and peer-reviewed endgame-strategy evidence), plus a small season-level scoring/pace illustration taken from NCAA reporting. 
+
+Data Sources and Coverage
+A robust 2015–2024 endgame study typically requires three linked datasets per game: play-by-play, team box score (or play-derived possessions), and metadata (season, conference, home/away/neutral, and team identifiers that remain stable across seasons). The sources below are commonly used to obtain these components at national scale:
+
+Play-by-play play logs and their cleaned schemas can be obtained from ESPN endpoints via public loaders (R and Python) that return event-level fields like period, clock display, home/away score, event type text, and whether a play is a scoring play. 
+
+Season-long team defensive strength can be pulled (for subscribers) from KenPom (adjusted defensive efficiency / opponent-adjusted ratings) or estimated from box scores using a possessions formula and points allowed per 100 possessions, which is conceptually consistent with tempo-free methods. 
+
+Additional archival box scores and tempo-free summaries may also be obtained from Sports-Reference, while detailed proprietary tagging (e.g., possession types, play taxonomy) may be available via Synergy Sports where licensed. (These are “nice-to-have” enrichments; the core endgame scoring-rate study can be done without proprietary tagging if play-by-play is comprehensive.) 
+
+Two additional public “data products” are relevant for validation and historical breadth. First, the SportsDataverse ecosystem (not itself a primary source, but a widely used extraction layer) documents loaders that provide multi-season men’s college play-by-play via ESPN-derived feeds. 
+ Second, the “March Madness Data” corpus (used in Kaggle-style competitions) documents play-by-play event logs and supplemental conference metadata structures; it is useful for cross-checking concepts and schemas, though its season coverage depends on the release vintage. 
+
+Finally, late-game strategy evidence—particularly intentional fouling decisions—is available in peer-reviewed or openly posted research. The “foul up 3” study (2010–2022) explicitly uses NCAA play-by-play collected from the NCAA website and quantifies win-probability gains from strategy by time cells. 
+
+Methods
+Data collection, joins, and cleaning logic
+The minimum viable dataset for this study is an event table with, for each play: game_id, period/half, clock timestamp, team (actor), score state before/after (or at least the running home/away score), and a scoring indicator/value. Data dictionaries in common ESPN-derived play-by-play extracts include these core elements (e.g., clock_display_value, period_number, scoring_play, score_value, home_score, away_score). 
+
+The cleaning and join steps are:
+
+Normalize identifiers: a stable game_id and stable team identifiers across seasons are critical. Many public loaders preserve both numeric ids and team names/abbreviations. 
+Standardize clock: convert clock_display_value into seconds remaining in the half and then into seconds remaining in regulation (for NCAA men’s regulation: two halves). (Overtime periods are flagged and can be excluded in primary analyses.) 
+Deduplicate / order events: ensure monotone time within each period, fix known occasional ordering artifacts, and collapse multi-row scoring sequences if needed (e.g., free throw series). 
+Impute score state at each second (or minute): build an “exposure table” that records, for each second of game clock in the target windows, the prevailing score margin and contextual covariates.
+Defining the late windows and the scoring-rate estimand
+The user-requested windows are:
+
+Final 10:00 of regulation (600 seconds remaining to 0:00),
+Final 5:00 of regulation (300 seconds remaining to 0:00),
+Final 3:00 of regulation (180 seconds remaining to 0:00).
+A key modeling choice is the denominator for “per-minute scoring rate.” For endgame questions, the natural denominator is game-clock minutes, not real elapsed time, because strategic fouling increases real time but does not change how much game clock remains. The estimand is therefore:
+
+[ \text{PPM}_{i,g,w} = \frac{\text{Points scored by team } i \text{ in game } g \text{ during window } w}{\text{Game-clock minutes observed in window } w} ]
+
+where the “minutes observed” is typically 10, 5, or 3 in regulation-only analysis, but should be computed from the exposure table to handle missing play-by-play segments or edge cases. 
+
+Margin buckets and exposure construction
+To estimate scoring in the exact buckets requested, define the offense-relative margin at each second (or at each play boundary) as:
+
+[ m_{i,g,t} = \text{score}{i,g,t} - \text{score}{-i,g,t} ]
+
+Then map to buckets:
+
+Leading: (>15), (10\text{–}15), (5\text{–}9), (1\text{–}4)
+Tied: (=0)
+Trailing: (-1\text{–}-4), (-5\text{–}-9), (-10\text{–}-15), (<-15)
+The “seconds-in-bucket” exposure is computed directly from the second-level table. Points are attributed to the bucket corresponding to the margin immediately before the scoring event (recommended for causal interpretability: “given this margin state, what scoring happens next?”). That attribution aligns with the way win-probability and endgame strategy research conditions on the current state when a decision is made. 
+
+Defensive strength measures
+The requested stratifications include “season defensive efficiency” and “opponent-adjusted defensive rating.” Two complementary, defensible definitions are:
+
+Unadjusted defensive efficiency (team-season): points allowed per 100 possessions, where possessions are estimated from box score components. Tempo-free practitioners emphasize that possessions are not an official NCAA statistic and must be estimated; a widely used college formula is:
+
+[ \text{Possessions} \approx \text{FGA} - \text{OR} + \text{TO} + 0.475 \cdot \text{FTA} ]
+
+This is documented in KenPom methodological material and is derived from play-by-play calibration. 
+
+Opponent-adjusted defensive rating: a model-based adjustment that controls for opponent offense quality and context. KenPom describes adjusted defensive efficiency as points allowed per 100 possessions, adjusted for opponent quality, game site, and timing/recency weighting. 
+
+If proprietary adjusted ratings are unavailable, the same conceptual object can be approximated with a hierarchical model estimated from all games in a season:
+
+latent team offensive effects (team-season offense)
+latent team defensive effects (team-season defense)
+home/away effects
+schedule strength induced by opponent random effects.
+This yields an “opponent-adjusted” defensive rating usable for quartiling and interactions.
+
+Identifying and controlling for “garbage-time strategies”
+The problem is not just “blowouts.” The late-game distortion is specifically the interaction of margin, time, and clock-stopping events, especially intentional fouls and their free-throw consequences. Empirically, this is significant enough that it is explicitly modeled in endgame fouling research. 
+
+A practical control strategy in play-by-play:
+
+Tag all foul events and free-throw attempts (including sequences). ESPN-derived play-by-play tables expose type_text and scoring flags/values, enabling identification by event taxonomy plus text rules. 
+Build per-second indicators such as: in_foul_game, ft_attempt_rate_last_60s, and clock_stop_density (timeouts + fouls + reviews if available).
+Treat “foul-game intensity” as either:
+a covariate (continuous) in the scoring-rate model, or
+a regime indicator splitting the data (e.g., last 3 minutes, |margin|≤9, foul rate above threshold).
+Because endgame fouling can change both scoring and the mapping from “game-clock minute” to “number of possessions encountered,” controlling for this mechanism is essential if the goal is expected points conditional on state. 
+
+Statistical modeling specification
+A workable event-to-model aggregation is team × game × second (or minute) observations with:
+
+response: points scored in that second/minute (integer, often zero)
+exposure: seconds or minutes
+predictors: margin bucket, home/away, opponent defensive strength quartile, season, conference, plus interactions.
+Because points are counts with overdispersion and many zeros, a negative binomial (or Poisson with robust/clustered variance) is a natural default:
+
+[ y_{i,g,t} \sim \text{NegBin}(\mu_{i,g,t}, \phi), \quad \log(\mu_{i,g,t}) = \log(\text{exposure}{i,g,t}) + \eta{i,g,t} ]
+
+[ \eta_{i,g,t} = \alpha + \beta_{\text{margin}[m]} + \beta_{\text{home}} + \beta_{\text{defQ}} + \beta_{\text{margin} \times \text{home}} + \beta_{\text{margin} \times \text{defQ}} + \gamma_{\text{season}} + \delta_{\text{conference}} + u_{\text{team-season}} + v_{\text{game}} ]
+
+This aligns with tempo-free logic (rates per unit exposure) and supports the interactions explicitly requested. Defensive efficiency covariates and their “adjusted” variants are central because defense is defined on points-per-possession (and thus points-per-minute at a given pace). 
+
+Data pipeline flowchart
+Acquire play-by-play + schedule + team box scores
+
+Normalize IDs, timestamps, periods
+
+Parse clock to seconds remaining in regulation
+
+Reconstruct score state + margin at each second
+
+Compute exposures: seconds-in-margin-bucket within last 10/5/3
+
+Tag fouls/FTs/clock-stops to quantify foul-game intensity
+
+Construct team-season defense metrics: unadjusted + adjusted
+
+Fit hierarchical model: points ~ margin × home + margin × defense + season + conf
+
+Report predicted points per minute + uncertainty + diagnostics
+
+
+
+Show code
+Results and Interpretation
+What can be quantified directly from primary methodological sources
+Possessions and efficiency definitions are standardized enough to support season and defense controls. In tempo-free college basketball analysis, possessions are estimated (not directly observed in standard box scores), and points per 100 possessions is the foundation for offensive/defensive efficiency. KenPom documents both the possessions estimate used in college basketball work and how adjusted efficiencies incorporate opponent quality and game site. 
+
+Season environments changed materially around 2015 due to the shot-clock rule change. NCAA reporting tied the 35→30 second shot-clock change to an increase in possessions per game and points per game, with efficiency also rising early in the post-change season. This illustrates why season fixed effects (or year-by-year baselines) are not optional when pooling 2015–2024. 
+
+Late-game fouling is measurable and materially affects outcomes. The up-3 fouling study uses NCAA Division I men’s play-by-play (2010–2022) and finds that choosing the recommended foul/no-foul action across time cells yields an average gain of 1.63 overtime-adjusted win percentage points. This evidence supports explicitly modeling or stratifying foul-driven regimes in late-game scoring-rate estimation rather than treating all final-minute possessions as homogeneous. 
+
+Garbage time and close-game intensity counterbalance on average, but not conditionally. A minute-by-minute analysis using a full season of men’s games found that end-of-game minutes contain a long tail of high-leverage scoring moments while many games are already decided; averaged across games, minute “importance” can look flat precisely because nail-biters and garbage-time minutes coexist. This reinforces the need for margin-conditioned scoring-rate estimates (your bucket design) rather than unconditional “last 3 minutes” averages. 
+
+Expected directional effects when you run the specified margin-conditioned models
+Because the final minutes are shaped by incentives and clock mechanics, the following effects are expected and are the quantities your regression framework is designed to separate:
+
+Margin bucket main effects (state dependence):
+
+When trailing narrowly (1–4, 5–9) late in regulation, points per game-clock minute are typically elevated by faster shot selection and increased foul/free throw sequences.
+When leading, especially by multiple possessions, scoring rates can decrease because teams trade expected points for clock consumption and lower-variance possessions.
+These mechanisms are precisely why literature highlights “the foul game” as a distinctive endgame regime. 
+Home/away interactions:
+Home teams often have structural advantages (crowd, familiarity, officiating effects in some contexts), but in the endgame the key modeling point is interaction: “home” may matter most in close margins where each possession’s leverage is highest and coaching decisions concentrate. A margin × home interaction term is therefore not just a statistical flourish; it is a structural hypothesis test. 
+
+Defense-strength interactions (opponent-adjusted defense):
+Defense should not be treated as a constant shift in mean scoring; its effect can be state-dependent. For example, a strong defense may suppress efficient looks in normal possessions, but in the final minute, if the game enters a high free throw regime, the influence of half-court defense can partially “wash out,” shifting importance toward free throw shooting and rebounding on misses. A margin × defense-strength interaction explicitly tests for this nonlinearity. 
+
+Tables requested by the user: output formats to generate from the fitted model
+Because the deliverable is an analytical, rigorous report, the core tables should be model-based predicted rates (not just raw averages), with uncertainty and clear conditioning.
+
+Table A — Predicted points per minute by margin bucket and window (regulation only)
+Each cell should report posterior mean (or estimate) and 95% CI/CrI:
+
+Window	Margin bucket	Predicted PPM	95% CI/CrI	Notes (regime flags)
+Final 10	Leading >15	—	—	likely garbage-time heavy
+Final 10	Leading 10–15	—	—	
+…	…	…	…	…
+Final 3	Trailing 1–4	—	—	high foul-game probability
+Final 3	Tied	—	—	late leverage
+
+This table is produced by marginalizing over team random effects (or setting them to average) and evaluating at specified covariate values. The necessity of conditioning on margin follows directly from evidence that endgame minutes mix garbage time with high-leverage states. 
+
+Table B — Predicted PPM by margin bucket × home/away (interaction table)
+
+Window	Margin bucket	Away PPM (CI/CrI)	Home PPM (CI/CrI)	Home–Away Δ (CI/CrI)
+Final 5	Trailing 1–4	—	—	—
+Final 5	Leading 1–4	—	—	—
+…	…	…	…	…
+
+Table C — Predicted PPM by opponent defensive-strength quartile
+Quartiles computed either from adjusted defensive efficiency (if available) or from the study’s own hierarchical adjustment model:
+
+Window	Margin bucket	Defense Q1 (elite)	Q2	Q3	Q4 (weak)
+Final 3	Trailing 5–9	—	—	—	—
+
+These tables operationalize the tempo-free premise that defense is best measured in points per possession and that opponent-adjusted ratings are required for fair comparison across schedules. 
+
+Visualizations requested: what to plot and why
+To match the user’s requested visuals, the minimal set is:
+
+Bar charts of predicted PPM by margin bucket for each window (10/5/3).
+Interaction plot: separate lines (home vs away) across margin buckets for the final 3 minutes.
+Defense-stratified bar charts: PPM by margin bucket faceted by defense quartile.
+Even before endgame-specific estimates are computed, the season environment (pace, scoring) should be visualized to justify season fixed effects. The charts embedded earlier in this report illustrate how a documented rule change can shift possessions and scoring baselines. 
+
+Robustness and Diagnostics
+A rigorous endgame scoring-rate report should include at least three robustness dimensions:
+
+Alternate margin bins. Refit models with coarser bins (e.g., ±1 possession, ±2 possessions, ±3 possessions) and compare fitted effects to verify that results are not artifacts of boundary choices. This is especially relevant because endgame behavior changes nonlinearly around two-possession and three-possession thresholds. 
+
+Exclude overtime and/or treat overtime separately. Overtime has different strategic incentives and can contaminate “final 3 minutes” logic if not excluded. (Primary model: regulation only; robustness: include OT with separate period indicators.) 
+
+Blowout exclusions / garbage-time filters. Run at least two definitions:
+
+“No blowouts”: exclude observations where |margin| > 15 at any time in the final 10 (strict), and
+“In-window blowouts”: exclude seconds where |margin| > 15 within each window (lenient).
+Because minute-level importance can appear flat only when close games and garbage-time games are pooled, robustness to blowout filtering is a core diagnostic rather than an optional sensitivity. 
+
+Model diagnostics should include:
+
+Overdispersion checks (Poisson vs negative binomial) and posterior predictive checks if Bayesian.
+Random effects sanity: team-season defense effects should correlate strongly with season-long defensive efficiency if computed independently.
+Residual structure by time: ensure no systematic underprediction of extreme foul-game minutes; if present, consider a mixture/regime model (normal endgame vs foul-game regime). The empirical importance of foul-driven strategy (and its measurable win-probability impact) is a warning sign that single-regime models can underfit the tails. 
+Practical Implications for In-Game Betting and Predictive Modeling
+Margin-conditioned endgame scoring rates directly support live totals, team totals, and in-game spread/cover probability models because the last 3–10 minutes are where “spread sensitivity” is often dominated by intentional fouling and clock stoppages rather than ordinary half-court efficiency.
+
+Key modeling takeaways:
+
+Do not use unconditional late-game averages. If you ignore margin buckets, you average together (i) slow, low-event clock-killing possessions while leading and (ii) foul-driven possessions while trailing—two regimes with different scoring distributions. Evidence that end-of-game minutes mix garbage time and high-leverage tails supports this warning. 
+
+Explicitly model foul-game intensity. The foul-up-3 literature demonstrates that endgame fouling is systematic and outcome-relevant, not random noise. In live markets, this translates to a sharp change in expected scoring conditional on margin/time thresholds (e.g., two-possession games under ~60 seconds). A covariate for foul/FT rates or an explicit regime switch is often warranted. 
+
+Defense matters differently late. In “normal” possessions, opponent-adjusted defense can explain large variance in points per possession. In heavy free throw regimes, defense may influence the probability of fouling and ability to force turnovers more than it influences shot quality. Testing margin × defense interactions tells you whether “elite defenses” truly suppress late scoring or whether the foul/clock mechanics dominate. 
+
+Limitations and Suggested Next Steps
+The main limitation of this report is operational rather than conceptual: producing the requested tables (PPM by margin bucket × home/away × defense quartiles across 2015–2024, by season/conference) requires executing a full multi-season play-by-play pull and join. The building blocks—play-by-play schemas, pace/possession methodology, and the known strategic importance of late-game fouling—are well documented in the cited sources, but the complete computed endgame rate surfaces are not generated here. 
+
+The highest-value next steps for completing a full 2015–2024 empirical deliverable are:
+
+Acquire full-season play-by-play + schedule + team box scores for 2015–2024 (regulation) from an official feed or an extraction layer that preserves identifiers and clock/score fields. ESPN-derived loaders document these fields clearly; confirm season completeness and missingness. 
+Compute defense metrics at the team-season level using the possession estimation methodology (and/or integrate subscriber adjusted defensive ratings if available), then produce quartiles per season. 
+Fit the hierarchical scoring-rate model and generate the three requested table families (A/B/C), plus the interaction plots, with robustness checks and diagnostics as specified above. 
+Validate endgame foul detection by comparing inferred foul-game segments with known “foul up 3” and “late trailing” situations; the published up-3 fouling research provides a concrete template for time-conditioned strategy cells and demonstrates the scale of effects you should not smooth away. 

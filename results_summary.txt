@@ -1,0 +1,15 @@
+Execution Started
+
+=== 3-Minute Model Results ===
+            Model       CV RMSE          CV R²
+            Ridge 5.443 ± 0.325  0.081 ± 0.033
+    Random Forest 5.467 ± 0.270  0.072 ± 0.025
+          XGBoost 5.760 ± 0.365 -0.029 ± 0.054
+Gradient Boosting 5.757 ± 0.388 -0.032 ± 0.109
+
+=== 5-Minute Model Results ===
+            Model       CV RMSE          CV R²
+    Random Forest 6.506 ± 0.315  0.019 ± 0.045
+            Ridge 6.546 ± 0.352  0.008 ± 0.048
+          XGBoost 6.984 ± 0.356 -0.131 ± 0.067
+Gradient Boosting 7.007 ± 0.362 -0.139 ± 0.076

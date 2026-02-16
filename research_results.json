@@ -1,0 +1,298 @@
+{
+  "schedule": {
+    "all_columns": [
+      "id",
+      "uid",
+      "date",
+      "attendance",
+      "time_valid",
+      "neutral_site",
+      "conference_competition",
+      "play_by_play_available",
+      "recent",
+      "start_date",
+      "notes_type",
+      "notes_headline",
+      "broadcast_market",
+      "broadcast_name",
+      "type_id",
+      "type_abbreviation",
+      "venue_id",
+      "venue_full_name",
+      "venue_address_city",
+      "venue_address_state",
+      "venue_indoor",
+      "status_clock",
+      "status_display_clock",
+      "status_period",
+      "status_type_id",
+      "status_type_name",
+      "status_type_state",
+      "status_type_completed",
+      "status_type_description",
+      "status_type_detail",
+      "status_type_short_detail",
+      "format_regulation_periods",
+      "home_id",
+      "home_uid",
+      "home_location",
+      "home_name",
+      "home_abbreviation",
+      "home_display_name",
+      "home_short_display_name",
+      "home_color",
+      "home_alternate_color",
+      "home_is_active",
+      "home_venue_id",
+      "home_logo",
+      "home_conference_id",
+      "home_score",
+      "home_winner",
+      "home_current_rank",
+      "home_linescores",
+      "home_records",
+      "away_id",
+      "away_uid",
+      "away_location",
+      "away_name",
+      "away_abbreviation",
+      "away_display_name",
+      "away_short_display_name",
+      "away_color",
+      "away_alternate_color",
+      "away_is_active",
+      "away_venue_id",
+      "away_logo",
+      "away_conference_id",
+      "away_score",
+      "away_winner",
+      "away_current_rank",
+      "away_linescores",
+      "away_records",
+      "game_id",
+      "season",
+      "season_type",
+      "status_type_alt_detail",
+      "tournament_id",
+      "groups_id",
+      "groups_name",
+      "groups_short_name",
+      "groups_is_conference",
+      "game_json",
+      "game_json_url",
+      "game_date_time",
+      "game_date",
+      "PBP",
+      "team_box",
+      "player_box"
+    ],
+    "potential_features": [
+      "notes_headline",
+      "home_score",
+      "home_current_rank",
+      "home_linescores",
+      "away_score",
+      "away_current_rank",
+      "away_linescores"
+    ],
+    "sample": [
+      {
+        "notes_headline": "Men's Basketball Championship - National Championship",
+        "home_score": 75,
+        "home_current_rank": 1.0,
+        "home_linescores": "[{'value': 36.0} {'value': 39.0}]",
+        "away_score": 60,
+        "away_current_rank": 1.0,
+        "away_linescores": "[{'value': 30.0} {'value': 30.0}]"
+      },
+      {
+        "notes_headline": "Men's Basketball Championship - Final Four",
+        "home_score": 86,
+        "home_current_rank": 1.0,
+        "home_linescores": "[{'value': 44.0} {'value': 42.0}]",
+        "away_score": 72,
+        "away_current_rank": 4.0,
+        "away_linescores": "[{'value': 40.0} {'value': 32.0}]"
+      },
+      {
+        "notes_headline": "Men's Basketball Championship - Final Four",
+        "home_score": 63,
+        "home_current_rank": 1.0,
+        "home_linescores": "[{'value': 35.0} {'value': 28.0}]",
+        "away_score": 50,
+        "away_current_rank": 11.0,
+        "away_linescores": "[{'value': 29.0} {'value': 21.0}]"
+      },
+      {
+        "notes_headline": "NIT - Championship",
+        "home_score": 79,
+        "home_current_rank": 99.0,
+        "home_linescores": "[{'value': 39.0} {'value': 40.0}]",
+        "away_score": 77,
+        "away_current_rank": 99.0,
+        "away_linescores": "[{'value': 39.0} {'value': 38.0}]"
+      },
+      {
+        "notes_headline": "NIT - Semifinal",
+        "home_score": 84,
+        "home_current_rank": 99.0,
+        "home_linescores": "[{'value': 42.0} {'value': 42.0}]",
+        "away_score": 67,
+        "away_current_rank": 99.0,
+        "away_linescores": "[{'value': 25.0} {'value': 42.0}]"
+      },
+      {
+        "notes_headline": "NIT - Semifinal",
+        "home_score": 100,
+        "home_current_rank": 99.0,
+        "home_linescores": "[{'value': 44.0} {'value': 56.0}]",
+        "away_score": 90,
+        "away_current_rank": 99.0,
+        "away_linescores": "[{'value': 44.0} {'value': 46.0}]"
+      },
+      {
+        "notes_headline": "Men's Basketball Championship - South Region - Elite 8",
+        "home_score": 64,
+        "home_current_rank": 4.0,
+        "home_linescores": "[{'value': 27.0} {'value': 37.0}]",
+        "away_score": 76,
+        "away_current_rank": 11.0,
+        "away_linescores": "[{'value': 21.0} {'value': 55.0}]"
+      },
+      {
+        "notes_headline": "Men's Basketball Championship - Midwest Region - Elite 8",
+        "home_score": 72,
+        "home_current_rank": 1.0,
+        "home_linescores": "[{'value': 36.0} {'value': 36.0}]",
+        "away_score": 66,
+        "away_current_rank": 2.0,
+        "away_linescores": "[{'value': 34.0} {'value': 32.0}]"
+      },
+      {
+        "notes_headline": "Men's Basketball Championship - West Region - Elite 8",
+        "home_score": 89,
+        "home_current_rank": 4.0,
+        "home_linescores": "[{'value': 35.0} {'value': 54.0}]",
+        "away_score": 82,
+        "away_current_rank": 6.0,
+        "away_linescores": "[{'value': 32.0} {'value': 50.0}]"
+      },
+      {
+        "notes_headline": "Men's Basketball Championship - East Region - Elite 8",
+        "home_score": 77,
+        "home_current_rank": 1.0,
+        "home_linescores": "[{'value': 28.0} {'value': 49.0}]",
+        "away_score": 52,
+        "away_current_rank": 3.0,
+        "away_linescores": "[{'value': 23.0} {'value': 29.0}]"
+      }
+    ]
+  },
+  "team_box": {
+    "all_columns": [
+      "game_id",
+      "season",
+      "season_type",
+      "game_date",
+      "game_date_time",
+      "team_id",
+      "team_uid",
+      "team_slug",
+      "team_location",
+      "team_name",
+      "team_abbreviation",
+      "team_display_name",
+      "team_short_display_name",
+      "team_color",
+      "team_alternate_color",
+      "team_logo",
+      "team_home_away",
+      "team_score",
+      "team_winner",
+      "assists",
+      "blocks",
+      "defensive_rebounds",
+      "fast_break_points",
+      "field_goal_pct",
+      "field_goals_made",
+      "field_goals_attempted",
+      "flagrant_fouls",
+      "fouls",
+      "free_throw_pct",
+      "free_throws_made",
+      "free_throws_attempted",
+      "largest_lead",
+      "offensive_rebounds",
+      "points_in_paint",
+      "steals",
+      "team_turnovers",
+      "technical_fouls",
+      "three_point_field_goal_pct",
+      "three_point_field_goals_made",
+      "three_point_field_goals_attempted",
+      "total_rebounds",
+      "total_technical_fouls",
+      "total_turnovers",
+      "turnover_points",
+      "turnovers",
+      "opponent_team_id",
+      "opponent_team_uid",
+      "opponent_team_slug",
+      "opponent_team_location",
+      "opponent_team_name",
+      "opponent_team_abbreviation",
+      "opponent_team_display_name",
+      "opponent_team_short_display_name",
+      "opponent_team_color",
+      "opponent_team_alternate_color",
+      "opponent_team_logo",
+      "opponent_team_score"
+    ],
+    "potential_features": [
+      "team_score",
+      "opponent_team_score"
+    ],
+    "sample": [
+      {
+        "team_score": 60,
+        "opponent_team_score": 75
+      },
+      {
+        "team_score": 75,
+        "opponent_team_score": 60
+      },
+      {
+        "team_score": 72,
+        "opponent_team_score": 86
+      },
+      {
+        "team_score": 86,
+        "opponent_team_score": 72
+      },
+      {
+        "team_score": 50,
+        "opponent_team_score": 63
+      },
+      {
+        "team_score": 63,
+        "opponent_team_score": 50
+      },
+      {
+        "team_score": 77,
+        "opponent_team_score": 79
+      },
+      {
+        "team_score": 79,
+        "opponent_team_score": 77
+      },
+      {
+        "team_score": 67,
+        "opponent_team_score": 84
+      },
+      {
+        "team_score": 84,
+        "opponent_team_score": 67
+      }
+    ]
+  }
+}

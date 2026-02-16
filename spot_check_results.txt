@@ -1,0 +1,53 @@
+Execution complete.
+
+=== Shape: (922, 40) ===
+
+=== Sample Rows (Key Features) ===
+           margin  lead_is_home  lead_spread  lead_is_fav  spread_mag  lead_avg_pace  trail_avg_pace  snapshot_total  total_pts
+game_id                                                                                                                        
+401479670      19             1         12.5            0        12.5      66.491667       68.015726             107         17
+401479671     -27             0         -7.0            1         7.0      66.750203       67.652439             137          8
+401479672      20             1         12.0            0        12.0      70.232037       70.015800             104         13
+401479673     -28             0         12.5            0        12.5      66.482252       68.239009             124          9
+401479677      10             1         15.5            0        15.5      71.401679       68.973984             134         12
+401479682      20             1         -2.0            1         2.0      66.217659       67.549436             110         12
+401479683      23             1          5.5            0         5.5      70.990800       68.064754             129         26
+401479684      28             1         -5.0            1         5.0      70.139015       68.865602             152         14
+401479685      12             1          6.0            0         6.0      69.729264       68.699213             130          7
+401479687      10             1          3.0            0         3.0      67.469309       69.371538             130         10
+
+=== Descriptive Stats (New Features) ===
+       lead_spread  spread_mag  snapshot_total  lead_avg_pace  trail_avg_pace  total_pts
+count       922.00      922.00          922.00         922.00          922.00     922.00
+mean          3.08        4.84          130.37          68.99           68.91      14.15
+std           5.53        4.08           17.06           2.25            1.84       5.80
+min         -16.00        0.00           83.00          61.31           61.31       0.00
+25%          -1.50        2.50          119.00          67.55           67.70      10.00
+50%           2.50        2.50          130.00          68.87           68.87      14.00
+75%           5.50        6.00          141.00          70.26           70.24      17.00
+max          24.50       24.50          198.00          74.20           74.20      43.00
+
+=== Logic Checks ===
+Inconsistent Favorite Status Rows: 0
+Zero Points Games: 1
+
+=== Missing Values ===
+margin            0
+lead_is_home      0
+lead_spread       0
+lead_is_fav       0
+spread_mag        0
+lead_avg_pace     0
+trail_avg_pace    0
+snapshot_total    0
+total_pts         0
+
+=== X_3 Interaction Stats ===
+count     922.0000
+mean      605.2779
+std       236.4446
+min       302.7132
+25%       417.5430
+50%       542.4264
+75%       733.8476
+max      1732.9369

@@ -1,0 +1,18 @@
+
+=== 3-Minute Random Forest Feature Importance ===
+          Feature  Importance
+  trail_tos_taken    0.774306
+    margin_x_pace    0.043883
+margin_x_trail_3p    0.035562
+      lead_spread    0.016563
+trail_avg_off_eff    0.012544
+   lead_tos_taken    0.010908
+      trail_in_db    0.010839
+   trail_avg_pace    0.009523
+ trail_avg_ft_pct    0.008132
+ lead_avg_off_eff    0.007512
+       spread_mag    0.007431
+   snapshot_total    0.006874
+ lead_avg_to_rate    0.006226
+  lead_avg_ft_pct    0.006110
+trail_avg_3pt_pct    0.006088
